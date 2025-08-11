@@ -1,0 +1,12 @@
+streamlit
+python-dotenv
+pandas
+numpy
+scikit-learn
+joblib
+faiss-cpu
+google-generativeai
+langchain
+langchain-google-genai
+langchain-community
+langchain-core
