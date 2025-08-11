@@ -1,4 +1,3 @@
-pickle
 streamlit
 python-dotenv
 pandas
