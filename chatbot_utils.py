@@ -2,10 +2,12 @@ import os
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
-from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 import joblib
 
 # Load environment variables
@@ -93,11 +95,14 @@ def convert_documents_to_dataframe(documents):
 
 def build_answer_chain(vectorstore):
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-    chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=retriever,
-        return_source_documents=False
+    prompt = PromptTemplate.from_template(
+        "Use the following context to answer the question.\n\nContext: {context}\n\nQuestion: {question}"
+    )
+    chain = (
+        {"context": retriever | (lambda docs: "\n\n".join(d.page_content for d in docs)), "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
     )
     return chain
 

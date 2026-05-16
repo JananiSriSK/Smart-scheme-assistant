@@ -178,7 +178,7 @@ with tab2:
     if st.button("Ask"):
         if user_query.strip():
             try:
-                response = qa_chain.run(user_query)
+                response = qa_chain.invoke(user_query)
                 st.markdown("**Answer:**")
                 st.write(response)
             except Exception as e:
